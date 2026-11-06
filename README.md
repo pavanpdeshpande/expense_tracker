@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FinTrack &bull; Personal Expense Tracker & Local Finance Management System
 
 A modern, high-performance, private **Personal Expense Tracker Web Application** engineered to run 100% locally on your computer via `localhost`.
@@ -180,3 +181,7 @@ Use the header dropdown to filter the dashboard and transaction views:
 - **Zero External Telemetry**: No user analytics or tracking code.
 - **Offline First**: All calculations, anomaly detection, chart aggregations, and PDF exports run strictly on your local machine using Python FastAPI and React.
 - **Persistent Local SQLite**: All records survive system restarts and power cycles.
+=======
+# expense_tracker
+A modern, locally hosted Personal Expense Tracker built with React, Python FastAPI, and SQLite. Features interactive financial dashboards, expense categorization, income and donation tracking, budget management, spending analytics, reports, and data backup. Designed for secure, offline-first personal finance management in INR.
+>>>>>>> c2297f98236863fb3c7d94e15a33484d1fd376bf
