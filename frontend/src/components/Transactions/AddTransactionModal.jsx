@@ -26,6 +26,28 @@ const DONATION_CATEGORIES = [
   'Other donations'
 ];
 
+function ChoiceButtons({ options, value, onChange, label, selectedClassName = 'bg-emerald-600 text-white shadow-sm' }) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1.5">
+      {options.map(option => (
+        <button
+          key={option.value}
+          type="button"
+          aria-pressed={value === option.value}
+          onClick={() => onChange(option.value)}
+          className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+            value === option.value
+              ? selectedClassName
+              : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-emerald-700 dark:hover:bg-slate-800'
+          }`}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function AddTransactionModal() {
   const {
     isAddModalOpen,
@@ -196,10 +218,13 @@ export default function AddTransactionModal() {
   if (!isAddModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-3 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div
+        style={{ width: '96vw', maxWidth: '1440px' }}
+        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[94vh] overflow-y-auto"
+      >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur z-10">
+        <div className="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-slate-200 dark:border-slate-800 sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur z-10">
           <div>
             <h2 className="text-lg font-bold text-slate-800 dark:text-white">
               {editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}
@@ -217,7 +242,7 @@ export default function AddTransactionModal() {
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
           {error && (
             <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 flex items-center gap-2 text-xs text-red-600 dark:text-red-400">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -320,33 +345,30 @@ export default function AddTransactionModal() {
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 Main Category <span className="text-rose-500">*</span>
               </label>
-              <select
+              <ChoiceButtons
+                label="Main Category"
                 value={formData.category_name}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name} {cat.type === 'income' ? '(Income)' : ''}
-                  </option>
-                ))}
-              </select>
+                onChange={handleCategoryChange}
+                options={categories.map(cat => ({
+                  value: cat.name,
+                  label: `${cat.name}${cat.type === 'income' ? ' (Income)' : ''}`
+                }))}
+              />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 Subcategory
               </label>
-              <select
+              <ChoiceButtons
+                label="Subcategory"
                 value={formData.subcategory_name}
-                onChange={(e) => setFormData(prev => ({ ...prev, subcategory_name: e.target.value }))}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">-- None / General --</option>
-                {availableSubcategories.map(sub => (
-                  <option key={sub.id} value={sub.name}>{sub.name}</option>
-                ))}
-              </select>
+                onChange={(subcategory_name) => setFormData(prev => ({ ...prev, subcategory_name }))}
+                options={[
+                  { value: '', label: 'None / General' },
+                  ...availableSubcategories.map(sub => ({ value: sub.name, label: sub.name }))
+                ]}
+              />
             </div>
           </div>
 
@@ -386,15 +408,12 @@ export default function AddTransactionModal() {
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                 Payment Method <span className="text-rose-500">*</span>
               </label>
-              <select
+              <ChoiceButtons
+                label="Payment Method"
                 value={formData.payment_method}
-                onChange={(e) => setFormData(prev => ({ ...prev, payment_method: e.target.value }))}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                {PAYMENT_METHODS.map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+                onChange={(payment_method) => setFormData(prev => ({ ...prev, payment_method }))}
+                options={PAYMENT_METHODS.map(method => ({ value: method, label: method }))}
+              />
             </div>
 
             <div>
@@ -422,15 +441,13 @@ export default function AddTransactionModal() {
                   <label className="block text-[11px] font-semibold text-orange-700 dark:text-orange-400 mb-1">
                     Donation Category
                   </label>
-                  <select
+                  <ChoiceButtons
+                    label="Donation Category"
                     value={formData.donation_category}
-                    onChange={(e) => setFormData(prev => ({ ...prev, donation_category: e.target.value }))}
-                    className="w-full px-3 py-1.5 bg-white dark:bg-slate-900 border border-orange-300 dark:border-orange-700 rounded-xl text-xs text-slate-800 dark:text-slate-100"
-                  >
-                    {DONATION_CATEGORIES.map(dc => (
-                      <option key={dc} value={dc}>{dc}</option>
-                    ))}
-                  </select>
+                    onChange={(donation_category) => setFormData(prev => ({ ...prev, donation_category }))}
+                    options={DONATION_CATEGORIES.map(category => ({ value: category, label: category }))}
+                    selectedClassName="border-orange-600 bg-orange-600 text-white shadow-sm"
+                  />
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-orange-700 dark:text-orange-400 mb-1">
